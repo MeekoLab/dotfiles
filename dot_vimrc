@@ -1,0 +1,250 @@
+" Vim configuration
+" Managed by chezmoi - edit with: chezmoi edit ~/.vimrc
+
+" ============================================================================
+" General Settings
+" ============================================================================
+
+" Disable compatibility with vi
+set nocompatible
+
+" Enable file type detection
+filetype on
+filetype plugin on
+filetype indent on
+
+" Enable syntax highlighting
+syntax on
+
+" Set encoding
+set encoding=utf-8
+set fileencoding=utf-8
+
+" ============================================================================
+" UI Configuration
+" ============================================================================
+
+" Show line numbers
+set number
+set relativenumber
+
+" Highlight current line
+set cursorline
+
+" Show command in bottom bar
+set showcmd
+
+" Show matching brackets
+set showmatch
+
+" Always show status line
+set laststatus=2
+
+" Enable 256 colors
+set t_Co=256
+
+" Set colorscheme (if available)
+silent! colorscheme desert
+
+" Show ruler
+set ruler
+
+" Display incomplete commands
+set showcmd
+
+" ============================================================================
+" Indentation
+" ============================================================================
+
+" Use spaces instead of tabs
+set expandtab
+
+" Set tab width to 4 spaces
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+
+" Enable auto indentation
+set autoindent
+set smartindent
+
+" ============================================================================
+" Search Settings
+" ============================================================================
+
+" Incremental search
+set incsearch
+
+" Highlight search results
+set hlsearch
+
+" Ignore case when searching
+set ignorecase
+
+" Smart case search
+set smartcase
+
+" ============================================================================
+" Editing Behavior
+" ============================================================================
+
+" Enable backspace over everything
+set backspace=indent,eol,start
+
+" Auto read when file is changed from outside
+set autoread
+
+" Don't create backup files
+set nobackup
+set nowritebackup
+set noswapfile
+
+" Enable persistent undo
+if has('persistent_undo')
+    set undofile
+    set undodir=~/.vim/undo
+    if !isdirectory(&undodir)
+        call mkdir(&undodir, 'p', 0700)
+    endif
+endif
+
+" Set history
+set history=1000
+
+" Enable mouse support
+if has('mouse')
+    set mouse=a
+endif
+
+" ============================================================================
+" Clipboard
+" ============================================================================
+
+" Use system clipboard
+if has('clipboard')
+    set clipboard=unnamed,unnamedplus
+endif
+
+" ============================================================================
+" Wildmenu
+" ============================================================================
+
+" Enhanced command line completion
+set wildmenu
+set wildmode=longest:full,full
+
+" Ignore compiled files
+set wildignore=*.o,*~,*.pyc
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
+set wildignore+=*/node_modules/*
+
+" ============================================================================
+" Key Mappings
+" ============================================================================
+
+" Set leader key to space
+let mapleader = " "
+
+" Clear search highlighting
+nnoremap <leader><space> :nohlsearch<CR>
+
+" Quick save
+nnoremap <leader>w :w<CR>
+
+" Quick quit
+nnoremap <leader>q :q<CR>
+
+" Save and quit
+nnoremap <leader>x :x<CR>
+
+" Navigate between windows
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Move lines up/down
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Better indenting in visual mode
+vnoremap < <gv
+vnoremap > >gv
+
+" Toggle paste mode
+set pastetoggle=<F2>
+
+" ============================================================================
+" File Type Specific
+" ============================================================================
+
+" Python
+autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4
+
+" JavaScript/TypeScript
+autocmd FileType javascript,typescript,json setlocal expandtab shiftwidth=2 tabstop=2
+
+" HTML/CSS
+autocmd FileType html,css setlocal expandtab shiftwidth=2 tabstop=2
+
+" YAML
+autocmd FileType yaml setlocal expandtab shiftwidth=2 tabstop=2
+
+" Markdown
+autocmd FileType markdown setlocal wrap linebreak
+
+" Shell scripts
+autocmd FileType sh,bash setlocal expandtab shiftwidth=4 tabstop=4
+
+" ============================================================================
+" Status Line
+" ============================================================================
+
+" Custom status line
+set statusline=
+set statusline+=%#PmenuSel#
+set statusline+=\ %f
+set statusline+=\ %#LineNr#
+set statusline+=\ %m
+set statusline+=%=
+set statusline+=\ %#CursorColumn#
+set statusline+=\ %y
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+set statusline+=\ [%{&fileformat}]
+set statusline+=\ %p%%
+set statusline+=\ %l:%c
+set statusline+=\
+
+" ============================================================================
+" Auto Commands
+" ============================================================================
+
+" Remove trailing whitespace on save
+autocmd BufWritePre * :%s/\s\+$//e
+
+" Return to last edit position when opening files
+autocmd BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+" ============================================================================
+" Plugin Manager (Optional - vim-plug)
+" ============================================================================
+
+" Install vim-plug if not present:
+" curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+" Uncomment to enable plugins:
+" call plug#begin('~/.vim/plugged')
+"
+" Plug 'tpope/vim-sensible'
+" Plug 'tpope/vim-surround'
+" Plug 'tpope/vim-commentary'
+" Plug 'junegunn/fzf.vim'
+" Plug 'preservim/nerdtree'
+"
+" call plug#end()

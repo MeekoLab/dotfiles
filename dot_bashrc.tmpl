@@ -1,0 +1,156 @@
+# ~/.bashrc
+# Managed by chezmoi - edit with: chezmoi edit ~/.bashrc
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+
+export EDITOR='vim'
+export VISUAL='code'
+
+# Add local bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
+
+# History settings
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export HISTCONTROL=ignoreboth:erasedups
+shopt -s histappend
+
+# Check window size after each command
+shopt -s checkwinsize
+
+# Enable globstar (recursive globbing)
+shopt -s globstar 2>/dev/null
+
+# ============================================================================
+# Colors
+# ============================================================================
+
+# Enable color support
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# Colored GCC warnings and errors
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# ============================================================================
+# Prompt
+# ============================================================================
+
+# Use Starship prompt if installed
+if command -v starship &>/dev/null; then
+    eval "$(starship init bash)"
+else
+    # Fallback to basic git prompt
+    parse_git_branch() {
+        git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+    }
+    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\[\033[01;33m\]$(parse_git_branch)\[\033[00m\]\$ '
+fi
+
+# ============================================================================
+# Aliases
+# ============================================================================
+
+# Load aliases if they exist
+if [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
+
+# Load functions if they exist
+if [ -f ~/.functions ]; then
+    source ~/.functions
+fi
+
+# ============================================================================
+# Platform-specific settings
+# ============================================================================
+
+{{- if eq .chezmoi.os "darwin" }}
+# macOS specific settings
+
+# Homebrew
+if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Use GNU tools on macOS (if installed via Homebrew)
+if type brew &>/dev/null; then
+    HOMEBREW_PREFIX="$(brew --prefix)"
+    # GNU coreutils
+    if [ -d "$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin" ]; then
+        export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+    fi
+    # GNU findutils
+    if [ -d "$HOMEBREW_PREFIX/opt/findutils/libexec/gnubin" ]; then
+        export PATH="$HOMEBREW_PREFIX/opt/findutils/libexec/gnubin:$PATH"
+    fi
+fi
+
+{{- else if eq .chezmoi.os "linux" }}
+# Linux specific settings
+
+{{- if eq .chezmoi.osRelease.id "opensuse" "opensuse-tumbleweed" "opensuse-leap" }}
+# openSUSE specific settings
+{{- end }}
+
+{{- end }}
+
+# ============================================================================
+# Development Tools
+# ============================================================================
+
+# Node Version Manager (nvm)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Python (pyenv)
+export PYENV_ROOT="$HOME/.pyenv"
+if [ -d "$PYENV_ROOT/bin" ]; then
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
+
+# Rust (cargo)
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
+
+# Go
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin"
+
+# ============================================================================
+# Custom Settings
+# ============================================================================
+
+# Load local settings (not tracked by chezmoi)
+if [ -f ~/.bashrc.local ]; then
+    source ~/.bashrc.local
+fi
+
+# Enable bash completion
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+# User-specific completions
+if [ -f ~/.bash_completion ]; then
+    . ~/.bash_completion
+fi
+
+# ============================================================================
+# Welcome Message
+# ============================================================================
+
+# Display system info on login (if neofetch is installed)
+if command -v neofetch &>/dev/null; then
+    neofetch
+fi

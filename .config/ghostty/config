@@ -1,0 +1,146 @@
+# Ghostty Terminal Configuration
+# Managed by chezmoi - edit with: chezmoi edit ~/.config/ghostty/config
+#
+# Documentation: https://ghostty.org/docs
+
+# ============================================================================
+# Font Configuration
+# ============================================================================
+
+# Font family
+font-family = "FiraCode Nerd Font"
+font-family-bold = "FiraCode Nerd Font"
+font-family-italic = "FiraCode Nerd Font"
+font-family-bold-italic = "FiraCode Nerd Font"
+
+# Font size
+font-size = 13
+
+# Font features (enable ligatures)
+font-feature = +calt
+font-feature = +liga
+
+# ============================================================================
+# Theme & Colors
+# ============================================================================
+
+# Theme (One Dark inspired)
+background = 282c34
+foreground = dcdfe4
+
+# Cursor
+cursor-color = ffffff
+cursor-style = bar
+
+# Selection
+selection-background = 474e5d
+selection-foreground = dcdfe4
+
+# Normal colors
+palette = 0=#282c34
+palette = 1=#e06c75
+palette = 2=#98c379
+palette = 3=#e5c07b
+palette = 4=#61afef
+palette = 5=#c678dd
+palette = 6=#56b6c2
+palette = 7=#dcdfe4
+
+# Bright colors
+palette = 8=#5c6370
+palette = 9=#e06c75
+palette = 10=#98c379
+palette = 11=#e5c07b
+palette = 12=#61afef
+palette = 13=#c678dd
+palette = 14=#56b6c2
+palette = 15=#ffffff
+
+# ============================================================================
+# Window Configuration
+# ============================================================================
+
+# Window padding
+window-padding-x = 8
+window-padding-y = 8
+
+# Window decorations
+window-decoration = true
+
+# Window opacity
+background-opacity = 1.0
+
+# ============================================================================
+# Shell & Command
+# ============================================================================
+
+# Use login shell
+shell-integration = detect
+shell-integration-features = cursor,sudo,title
+
+# ============================================================================
+# Scrollback
+# ============================================================================
+
+# Scrollback lines
+scrollback-limit = 10000
+
+# ============================================================================
+# Mouse & Clipboard
+# ============================================================================
+
+# Copy on select
+copy-on-select = false
+
+# Click to open URLs
+mouse-hide-while-typing = true
+
+# ============================================================================
+# Keybindings
+# ============================================================================
+
+# Use system keybindings by default
+# Custom keybindings can be added here
+
+# Split panes
+keybind = ctrl+shift+d=new_split:right
+keybind = ctrl+shift+shift+d=new_split:down
+
+# Navigate splits
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:bottom
+keybind = ctrl+shift+k=goto_split:top
+keybind = ctrl+shift+l=goto_split:right
+
+# Resize splits
+keybind = ctrl+shift+left=resize_split:left,10
+keybind = ctrl+shift+right=resize_split:right,10
+keybind = ctrl+shift+up=resize_split:up,10
+keybind = ctrl+shift+down=resize_split:down,10
+
+# New tab
+keybind = ctrl+shift+t=new_tab
+
+# Close tab
+keybind = ctrl+shift+w=close_surface
+
+# Navigate tabs
+keybind = ctrl+shift+tab=previous_tab
+keybind = ctrl+tab=next_tab
+
+# ============================================================================
+# Performance
+# ============================================================================
+
+# GPU acceleration (enabled by default)
+# Ghostty is designed to be GPU-accelerated
+
+# ============================================================================
+# Miscellaneous
+# ============================================================================
+
+# Confirm before closing
+confirm-close-surface = false
+
+# Auto-update check
+auto-update = check

@@ -1,0 +1,376 @@
+# Shell Functions
+# Managed by chezmoi - edit with: chezmoi edit ~/.functions
+# Works with both bash and zsh
+
+# ============================================================================
+# Directory Navigation
+# ============================================================================
+
+# Create a new directory and enter it
+mkcd() {
+    mkdir -p "$@" && cd "$_" || return
+}
+
+# Go up n directories
+up() {
+    local d=""
+    local limit="$1"
+
+    # Default to limit of 1
+    if [ -z "$limit" ] || [ "$limit" -le 0 ]; then
+        limit=1
+    fi
+
+    for ((i=1; i<=limit; i++)); do
+        d="../$d"
+    done
+
+    # Perform cd. Show error if cd fails
+    if ! cd "$d"; then
+        echo "Couldn't go up $limit dirs."
+    fi
+}
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+# Extract any archive
+extract() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.tar.xz)    tar xJf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar x "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *)           echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Create a data URL from a file
+dataurl() {
+    local mimeType
+    mimeType=$(file -b --mime-type "$1")
+    if [[ $mimeType == text/* ]]; then
+        mimeType="${mimeType};charset=utf-8"
+    fi
+    echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
+}
+
+# Get file size
+fs() {
+    if du -b /dev/null > /dev/null 2>&1; then
+        local arg=-sbh
+    else
+        local arg=-sh
+    fi
+    if [[ -n "$*" ]]; then
+        du $arg -- "$@"
+    else
+        du $arg .[^.]* ./*
+    fi
+}
+
+# ============================================================================
+# Git Functions
+# ============================================================================
+
+# Clone a repo and cd into it
+gcl() {
+    git clone "$@"
+    if [ "$2" ]; then
+        cd "$2" || return
+    else
+        cd "$(basename "$1" .git)" || return
+    fi
+}
+
+# Commit everything with a message
+gac() {
+    git add -A
+    git commit -m "$*"
+}
+
+# Quick commit and push
+gacp() {
+    git add -A
+    git commit -m "$*"
+    git push
+}
+
+# Create a new git branch and switch to it
+gnb() {
+    git checkout -b "$1"
+}
+
+# Delete git branch locally and remotely
+gdb() {
+    git branch -D "$1"
+    git push origin --delete "$1"
+}
+
+# Show git contributors
+git-contributors() {
+    git log --all --format='%aN <%aE>' | sort -u
+}
+
+# ============================================================================
+# Network Functions
+# ============================================================================
+
+# Get HTTP status code
+httpstatus() {
+    curl -o /dev/null -s -w "%{http_code}\n" "$1"
+}
+
+# Download file and save with original name
+download() {
+    curl -O "$1"
+}
+
+# Test website speed
+speedtest() {
+    curl -o /dev/null -s -w "DNS: %{time_namelookup}s\nConnect: %{time_connect}s\nTransfer: %{time_starttransfer}s\nTotal: %{time_total}s\n" "$1"
+}
+
+# Port check
+portcheck() {
+    if command -v nc &>/dev/null; then
+        nc -zv "$1" "$2"
+    else
+        echo "netcat (nc) is not installed"
+    fi
+}
+
+# ============================================================================
+# Development Functions
+# ============================================================================
+
+# Create Python virtual environment and activate it
+pyvenv() {
+    local venv_name="${1:-.venv}"
+    python3 -m venv "$venv_name"
+    source "$venv_name/bin/activate"
+    echo "Virtual environment '$venv_name' created and activated"
+}
+
+# Initialize a Node.js project quickly
+npminit() {
+    npm init -y
+    git init
+    echo "node_modules/" > .gitignore
+    echo "Project initialized with npm and git"
+}
+
+# Find TODO comments in current directory
+todos() {
+    local pattern="${1:-TODO|FIXME|HACK|XXX|BUG}"
+    grep -rn -E "$pattern" --exclude-dir={node_modules,.git,vendor,dist,build} . 2>/dev/null
+}
+
+# Count lines of code (excluding common non-code directories)
+cloc() {
+    find . -type f \
+        -not -path '*/\.*' \
+        -not -path '*/node_modules/*' \
+        -not -path '*/vendor/*' \
+        -not -path '*/dist/*' \
+        -not -path '*/build/*' \
+        -exec wc -l {} + | sort -rn
+}
+
+# ============================================================================
+# Docker Functions
+# ============================================================================
+
+if command -v docker &>/dev/null; then
+    # Enter a running container
+    denter() {
+        docker exec -it "$1" /bin/bash || docker exec -it "$1" /bin/sh
+    }
+
+    # Stop all containers
+    dstopall() {
+        docker stop $(docker ps -aq)
+    }
+
+    # Remove all containers
+    drmall() {
+        docker rm $(docker ps -aq)
+    }
+
+    # Remove all images
+    drmiall() {
+        docker rmi $(docker images -q)
+    }
+
+    # Docker cleanup everything
+    dcleanall() {
+        docker system prune -af --volumes
+    }
+
+    # Show docker disk usage
+    ddisk() {
+        docker system df -v
+    }
+fi
+
+# ============================================================================
+# System Information
+# ============================================================================
+
+# System info summary
+sysinfo() {
+    echo "=== System Information ==="
+    echo "Hostname: $(hostname)"
+    echo "OS: $(uname -s)"
+    echo "Kernel: $(uname -r)"
+    echo "Arch: $(uname -m)"
+    echo "Uptime: $(uptime | awk -F'( |,|:)+' '{print $6,$7",",$8,"hours,",$9,"minutes."}')"
+    echo "CPU: $(grep -m1 'model name' /proc/cpuinfo 2>/dev/null | cut -d':' -f2 | xargs || sysctl -n machdep.cpu.brand_string 2>/dev/null)"
+    echo "Memory: $(free -h 2>/dev/null | awk '/^Mem:/ {print $3 "/" $2}' || vm_stat 2>/dev/null | head -1)"
+    echo "Disk: $(df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 " used)"}')"
+}
+
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+# Convert JSON to YAML
+json2yaml() {
+    python3 -c 'import sys, yaml, json; yaml.safe_dump(json.load(sys.stdin), sys.stdout, default_flow_style=False)' < "$1"
+}
+
+# Convert YAML to JSON
+yaml2json() {
+    python3 -c 'import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout, indent=2)' < "$1"
+}
+
+# Pretty print JSON
+json() {
+    if [ -t 0 ]; then
+        python3 -m json.tool <<< "$*" | pygmentize -l json 2>/dev/null || python3 -m json.tool <<< "$*"
+    else
+        python3 -m json.tool | pygmentize -l json 2>/dev/null || python3 -m json.tool
+    fi
+}
+
+# Generate random string
+randstr() {
+    local length="${1:-32}"
+    LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c "$length"
+    echo
+}
+
+# Calculate
+calc() {
+    python3 -c "print($*)"
+}
+
+# URL encode
+urlencode() {
+    python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))" "$1"
+}
+
+# URL decode
+urldecode() {
+    python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))" "$1"
+}
+
+# ============================================================================
+# Search Functions
+# ============================================================================
+
+# Find files by name
+f() {
+    find . -iname "*$1*" 2>/dev/null
+}
+
+# Find in files (grep recursive)
+fif() {
+    grep -rnw . -e "$1" 2>/dev/null
+}
+
+# Find and replace in files
+far() {
+    if [ $# -lt 2 ]; then
+        echo "Usage: far <search> <replace> [directory]"
+        return 1
+    fi
+    local search="$1"
+    local replace="$2"
+    local dir="${3:-.}"
+
+    find "$dir" -type f -exec sed -i.bak "s/$search/$replace/g" {} +
+    echo "Replaced '$search' with '$replace' in $dir"
+}
+
+# ============================================================================
+# Backup Functions
+# ============================================================================
+
+# Backup a file with timestamp
+backup() {
+    if [ -f "$1" ]; then
+        cp "$1" "$1.$(date +%Y%m%d_%H%M%S).bak"
+        echo "Backed up: $1.$(date +%Y%m%d_%H%M%S).bak"
+    else
+        echo "File not found: $1"
+    fi
+}
+
+# Backup a directory
+backupdir() {
+    if [ -d "$1" ]; then
+        tar -czf "$1.$(date +%Y%m%d_%H%M%S).tar.gz" "$1"
+        echo "Backed up: $1.$(date +%Y%m%d_%H%M%S).tar.gz"
+    else
+        echo "Directory not found: $1"
+    fi
+}
+
+# ============================================================================
+# Tmux Functions
+# ============================================================================
+
+if command -v tmux &>/dev/null; then
+    # Create or attach to a tmux session
+    tm() {
+        local session_name="${1:-main}"
+        if tmux has-session -t "$session_name" 2>/dev/null; then
+            tmux attach-session -t "$session_name"
+        else
+            tmux new-session -s "$session_name"
+        fi
+    }
+
+    # Kill tmux session
+    tk() {
+        local session_name="${1:-main}"
+        tmux kill-session -t "$session_name"
+    }
+fi
+
+# ============================================================================
+# Help Function
+# ============================================================================
+
+# List all custom functions
+functions() {
+    echo "Available custom functions:"
+    echo ""
+    grep "^[a-z_-]*() {" ~/.functions | sed 's/() {//' | sort
+    echo ""
+    echo "Use 'type <function_name>' to see the definition"
+}

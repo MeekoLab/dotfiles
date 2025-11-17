@@ -1,0 +1,2 @@
+# This directory is used for SSH ControlMaster sockets
+# It speeds up multiple SSH connections to the same host

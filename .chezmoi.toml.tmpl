@@ -1,29 +1,108 @@
-# Main chezmoi configuration
-sourceDir = "~/.dotfiles"
+{{- $name := "Meeko" -}}
+{{- $email := "your@email.com" -}}
+{{- $username := .chezmoi.username -}}
 
-# Set default umask for file permissions
-umask = "022"
+{{- if eq .chezmoi.os "windows" -}}
+{{-   $username = or (env "USERNAME") .chezmoi.username -}}
+{{- end -}}
 
-# Default template extension for chezmoi templates
-defaultTemplateExtension = "tmpl"
+# Main chezmoi configuration file
+# Documentation: https://www.chezmoi.io/reference/configuration-file/
 
-# Enable confirmation prompts for destructive actions
-prompt = true
+# Source directory configuration (platform-specific)
+{{- if eq .chezmoi.os "windows" }}
+sourceDir = "C:/Users/{{ $username }}/.dotfiles"
+{{- else if eq .chezmoi.os "darwin" }}
+sourceDir = "/Users/{{ $username }}/.dotfiles"
+{{- else if eq .chezmoi.os "linux" }}
+sourceDir = "/home/{{ $username }}/.dotfiles"
+{{- end }}
 
-# Example of custom data for templates
+# File permissions
+umask = 0o022
+
+# Template settings
+[template]
+  options = ["missingkey=error"]
+
+# Template data available in all templates
 [data]
-  name = "Meeko"
-  email = "your@email.com"
+  name = {{ $name | quote }}
+  email = {{ $email | quote }}
+  username = {{ $username | quote }}
 
-# Minimum age for auto-update (e.g. 24h)
-minAge = "24h"
+# Git repository settings
+[git]
+  autoCommit = false
+  autoPush = false
 
-# Add platform-specific configuration if needed
-[windows]
-  sourceDir = "C:/Users/{{ .username }}/.dotfiles"
+# Diff settings
+[diff]
+  exclude = ["scripts"]
+  pager = "less -R"
 
-[linux]
-  sourceDir = "/home/{{ .username }}/.dotfiles"
+# Merge settings
+[merge]
+  command = "code"
+  args = ["--wait", "--merge", "{{ "{{ .Destination }}" }}", "{{ "{{ .Source }}" }}", "{{ "{{ .Target }}" }}"]
 
-[darwin]
-  sourceDir = "/Users/{{ .username }}/.dotfiles"
+# Edit settings
+[edit]
+  command = "code"
+  args = ["--wait"]
+
+# CD settings (shell integration)
+[cd]
+  command = "pwsh"
+
+# Encryption settings (age)
+[age]
+  # Uncomment and configure if using age encryption
+  # identity = "~/.config/chezmoi/key.txt"
+  # recipient = "age1..."
+
+# Minimum age for auto-update check
+[update]
+  command = "git"
+  args = ["pull", "--rebase"]
+
+# Auto-update settings
+[autoUpdate]
+  enable = false
+  interval = "168h" # 7 days
+
+# Interactive prompts
+[promptBool]
+  prompt = true
+
+# Script execution settings
+[scriptEnv]
+  # Environment variables available to scripts
+  DOTFILES_DIR = {{ .chezmoi.sourceDir | quote }}
+
+{{- if eq .chezmoi.os "windows" }}
+  POWERSHELL_TELEMETRY_OPTOUT = "1"
+{{- end }}
+
+# Warning on remove
+[remove]
+  prompt = true
+
+# Platform-specific settings
+{{- if eq .chezmoi.os "windows" }}
+
+[interpreters.ps1]
+  command = "pwsh"
+  args = ["-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass"]
+
+{{- else if eq .chezmoi.os "darwin" }}
+
+[interpreters.sh]
+  command = "/bin/bash"
+
+{{- else if eq .chezmoi.os "linux" }}
+
+[interpreters.sh]
+  command = "/bin/bash"
+
+{{- end }}

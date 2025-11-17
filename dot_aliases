@@ -1,0 +1,249 @@
+# Shell Aliases
+# Managed by chezmoi - edit with: chezmoi edit ~/.aliases
+# Works with both bash and zsh
+
+# ============================================================================
+# Navigation
+# ============================================================================
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ~='cd ~'
+alias -- -='cd -'
+
+# ============================================================================
+# List Directory Contents
+# ============================================================================
+
+# Detect which `ls` flavor is in use
+if ls --color > /dev/null 2>&1; then # GNU `ls`
+    colorflag="--color"
+    export LS_COLORS='no=00:fi=00:di=01;31:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
+else # macOS `ls`
+    colorflag="-G"
+    export LSCOLORS='BxBxhxDxfxhxhxhxhxcxcx'
+fi
+
+# List all files colorized in long format
+alias l="ls -lhF ${colorflag}"
+
+# List all files colorized in long format, excluding . and ..
+alias la="ls -lAhF ${colorflag}"
+
+# List only directories
+alias lsd="ls -lhF ${colorflag} | grep --color=never '^d'"
+
+# Always use color output for `ls`
+alias ls="command ls ${colorflag}"
+
+# ============================================================================
+# File Operations
+# ============================================================================
+
+# Always confirm before overwriting
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+
+# Create parent directories as needed
+alias mkdir='mkdir -pv'
+
+# Human readable sizes
+alias df='df -h'
+alias du='du -h'
+
+# ============================================================================
+# Grep
+# ============================================================================
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# ============================================================================
+# Process Management
+# ============================================================================
+
+# Show top processes by CPU
+alias cpu='ps aux | sort -rn -k 3 | head -10'
+
+# Show top processes by Memory
+alias mem='ps aux | sort -rn -k 4 | head -10'
+
+# Interactive process viewer (if htop is installed)
+if command -v htop &>/dev/null; then
+    alias top='htop'
+fi
+
+# ============================================================================
+# Network
+# ============================================================================
+
+# IP addresses
+alias ip='curl -s https://ipinfo.io/ip'
+alias localip='ipconfig getifaddr en0 2>/dev/null || hostname -I | awk "{print \$1}"'
+
+# Show open ports
+alias ports='netstat -tulanp 2>/dev/null || netstat -an | grep LISTEN'
+
+# Flush DNS cache
+alias flushdns='sudo dscacheutil -flushcache 2>/dev/null || sudo systemd-resolve --flush-caches 2>/dev/null || sudo /etc/init.d/nscd restart 2>/dev/null'
+
+# ============================================================================
+# Git Shortcuts (additional to .gitconfig aliases)
+# ============================================================================
+
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gaa='git add --all'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gl='git log --oneline --graph --decorate'
+alias gco='git checkout'
+alias gb='git branch'
+alias gba='git branch -a'
+alias gcl='git clone'
+alias gst='git stash'
+alias gsta='git stash apply'
+alias gstp='git stash pop'
+
+# ============================================================================
+# Docker Shortcuts
+# ============================================================================
+
+if command -v docker &>/dev/null; then
+    alias d='docker'
+    alias dc='docker-compose'
+    alias dps='docker ps'
+    alias dpsa='docker ps -a'
+    alias di='docker images'
+    alias dex='docker exec -it'
+    alias dlog='docker logs -f'
+    alias dstop='docker stop $(docker ps -aq)'
+    alias drm='docker rm $(docker ps -aq)'
+    alias drmi='docker rmi $(docker images -q)'
+    alias dprune='docker system prune -af'
+fi
+
+# ============================================================================
+# System Specific
+# ============================================================================
+
+# Package management shortcuts
+case "$(uname -s)" in
+    Linux*)
+        if command -v apt &>/dev/null; then
+            alias update='sudo apt update && sudo apt upgrade -y'
+            alias install='sudo apt install'
+            alias remove='sudo apt remove'
+            alias search='apt search'
+        elif command -v zypper &>/dev/null; then
+            alias update='sudo zypper dup'
+            alias install='sudo zypper install'
+            alias remove='sudo zypper remove'
+            alias search='zypper search'
+        elif command -v dnf &>/dev/null; then
+            alias update='sudo dnf update -y'
+            alias install='sudo dnf install'
+            alias remove='sudo dnf remove'
+            alias search='dnf search'
+        elif command -v pacman &>/dev/null; then
+            alias update='sudo pacman -Syu'
+            alias install='sudo pacman -S'
+            alias remove='sudo pacman -R'
+            alias search='pacman -Ss'
+        fi
+        ;;
+    Darwin*)
+        if command -v brew &>/dev/null; then
+            alias update='brew update && brew upgrade && brew cleanup'
+            alias install='brew install'
+            alias remove='brew uninstall'
+            alias search='brew search'
+        fi
+        ;;
+esac
+
+# ============================================================================
+# Chezmoi Shortcuts
+# ============================================================================
+
+alias ch='chezmoi'
+alias cha='chezmoi apply'
+alias chd='chezmoi diff'
+alias che='chezmoi edit'
+alias chu='chezmoi update'
+alias chs='chezmoi status'
+
+# ============================================================================
+# Development
+# ============================================================================
+
+# Python
+alias py='python3'
+alias pip='pip3'
+alias venv='python3 -m venv'
+alias activate='source venv/bin/activate || source .venv/bin/activate'
+
+# Node.js / npm
+alias ni='npm install'
+alias nid='npm install --save-dev'
+alias nig='npm install -g'
+alias nr='npm run'
+alias ns='npm start'
+alias nt='npm test'
+alias nb='npm run build'
+
+# ============================================================================
+# Utilities
+# ============================================================================
+
+# Quick editing
+alias zshrc='${EDITOR:-vim} ~/.zshrc'
+alias bashrc='${EDITOR:-vim} ~/.bashrc'
+alias aliases='${EDITOR:-vim} ~/.aliases'
+alias hosts='sudo ${EDITOR:-vim} /etc/hosts'
+
+# Reload shell
+alias reload='exec ${SHELL} -l'
+
+# Clear screen
+alias c='clear'
+
+# Print PATH in readable format
+alias path='echo -e ${PATH//:/\\n}'
+
+# Get week number
+alias week='date +%V'
+
+# Weather
+alias weather='curl -s wttr.in'
+
+# ============================================================================
+# Fun
+# ============================================================================
+
+# Generate random password
+alias genpass='openssl rand -base64 32'
+
+# QR code from clipboard (requires qrencode)
+if command -v qrencode &>/dev/null; then
+    alias qr='qrencode -t UTF8'
+fi
+
+# ============================================================================
+# Safety
+# ============================================================================
+
+# Prevent accidental deletion of root
+alias rm='rm -I --preserve-root'
+alias chown='chown --preserve-root'
+alias chmod='chmod --preserve-root'
+alias chgrp='chgrp --preserve-root'

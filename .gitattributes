@@ -1,0 +1,28 @@
+# Git attributes for proper line ending handling
+
+# Auto-detect text files and normalize line endings to LF
+* text=auto
+
+# Explicitly declare text files
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+*.tmpl text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+
+# PowerShell scripts should have CRLF on checkout
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

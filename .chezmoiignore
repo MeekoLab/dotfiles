@@ -1,0 +1,51 @@
+# Cross-platform ignore rules for chezmoi
+# Files matching these patterns will not be applied to the target system
+
+# Ignore README and documentation when applying dotfiles
+README.md
+LICENSE
+CLAUDE.md
+QUICKSTART.md
+docs/
+.github/
+
+# Ignore versioning files (these are for the dotfiles repo itself)
+VERSION
+git-hooks/
+.gitignore
+
+# Platform-specific script ignores
+
+{{- if ne .chezmoi.os "windows" }}
+# Ignore Windows scripts on non-Windows systems
+scripts/run_once_install_windows.ps1
+{{- end }}
+
+{{- if ne .chezmoi.os "darwin" }}
+# Ignore macOS scripts on non-macOS systems
+scripts/run_once_install_macos.sh
+{{- end }}
+
+{{- if ne .chezmoi.os "linux" }}
+# Ignore Linux scripts on non-Linux systems
+scripts/run_once_install_opensuse.sh
+{{- end }}
+
+{{- if and (eq .chezmoi.os "linux") (ne .chezmoi.osRelease.id "opensuse") (ne .chezmoi.osRelease.id "opensuse-tumbleweed") (ne .chezmoi.osRelease.id "opensuse-leap") }}
+# Ignore openSUSE scripts on non-openSUSE Linux systems
+scripts/run_once_install_opensuse.sh
+{{- end }}
+
+{{- if eq .chezmoi.os "windows" }}
+# Ignore Unix scripts on Windows
+scripts/run_once_install_devtools.sh
+scripts/run_once_install_git_hooks.sh
+
+# Ignore Ghostty config on Windows (not available)
+.config/ghostty/
+{{- end }}
+
+{{- if ne .chezmoi.os "windows" }}
+# Ignore Windows scripts on non-Windows systems
+scripts/run_once_install_git_hooks.ps1
+{{- end }}

@@ -1,0 +1,139 @@
+# SSH Client Configuration
+# Managed by chezmoi - edit with: chezmoi edit ~/.ssh/config
+#
+# Documentation: man ssh_config
+
+# ============================================================================
+# Global Settings
+# ============================================================================
+
+# Use ssh-agent for key management
+AddKeysToAgent yes
+
+# Forward SSH agent (be careful with this on untrusted servers)
+# ForwardAgent no
+
+# Keep connections alive
+ServerAliveInterval 60
+ServerAliveCountMax 3
+
+# Use compression
+Compression yes
+
+# Reuse connections for speed
+ControlMaster auto
+ControlPath ~/.ssh/sockets/%r@%h:%p
+ControlPersist 600
+
+# Create socket directory if it doesn't exist
+# mkdir -p ~/.ssh/sockets
+
+# Prefer IPv4 over IPv6
+AddressFamily inet
+
+# Hash known hosts for privacy
+HashKnownHosts yes
+
+# Verify host key fingerprints
+StrictHostKeyChecking ask
+
+# Use stronger encryption
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+
+# ============================================================================
+# Platform-Specific Settings
+# ============================================================================
+
+{{- if eq .chezmoi.os "darwin" }}
+# macOS: Use Keychain for passphrases
+UseKeychain yes
+IgnoreUnknown UseKeychain
+{{- end }}
+
+# ============================================================================
+# Host Configurations (Examples)
+# ============================================================================
+
+# Example: GitHub
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    # Or use specific key: IdentityFile ~/.ssh/github_key
+
+# Example: GitLab
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+
+# Example: Personal Server
+# Host myserver
+#     HostName example.com
+#     User {{ .username }}
+#     Port 22
+#     IdentityFile ~/.ssh/id_ed25519
+#     ForwardAgent no
+
+# Example: Jump Host (Bastion)
+# Host bastion
+#     HostName bastion.example.com
+#     User jump-user
+#     IdentityFile ~/.ssh/bastion_key
+
+# Example: Server via Jump Host
+# Host internal-server
+#     HostName 10.0.1.100
+#     User {{ .username }}
+#     ProxyJump bastion
+#     IdentityFile ~/.ssh/id_ed25519
+
+# Example: AWS EC2 Instance
+# Host aws-web
+#     HostName ec2-xx-xx-xx-xx.compute.amazonaws.com
+#     User ec2-user
+#     IdentityFile ~/.ssh/aws-key.pem
+
+# Example: Docker Container via SSH
+# Host docker-container
+#     HostName localhost
+#     Port 2222
+#     User root
+#     StrictHostKeyChecking no
+#     UserKnownHostsFile /dev/null
+
+# Example: Wildcard for local network
+# Host 192.168.*
+#     User {{ .username }}
+#     StrictHostKeyChecking no
+#     UserKnownHostsFile /dev/null
+
+# Example: Development servers
+# Host dev-*
+#     User developer
+#     IdentityFile ~/.ssh/dev_key
+#     ForwardAgent yes
+
+# ============================================================================
+# Security Notes
+# ============================================================================
+
+# 1. Generate SSH keys:
+#    ssh-keygen -t ed25519 -C "{{ .email }}"
+#
+# 2. Copy public key to server:
+#    ssh-copy-id user@hostname
+#
+# 3. Disable password authentication on server:
+#    Edit /etc/ssh/sshd_config:
+#    PasswordAuthentication no
+#    ChallengeResponseAuthentication no
+#
+# 4. Use ssh-agent to avoid typing passphrase:
+#    eval "$(ssh-agent -s)"
+#    ssh-add ~/.ssh/id_ed25519
+#
+# 5. Test configuration:
+#    ssh -T git@github.com

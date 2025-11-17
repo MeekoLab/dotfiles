@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#
+# Git pre-push hook for automatic versioning
+# Automatically increments patch version before each push
+#
+# Installation: Run scripts/run_once_install_git_hooks.sh
+# Or manually: cp git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+
+set -euo pipefail
+
+# Colors
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly CYAN='\033[0;36m'
+readonly NC='\033[0m' # No Color
+
+VERSION_FILE="VERSION"
+
+# Check if VERSION file exists
+if [[ ! -f "$VERSION_FILE" ]]; then
+    echo -e "${YELLOW}⚠ VERSION file not found, creating default version 1.0.0${NC}"
+    echo "1.0.0" > "$VERSION_FILE"
+fi
+
+# Read current version
+CURRENT_VERSION=$(cat "$VERSION_FILE")
+
+# Parse version
+if [[ ! "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo -e "${YELLOW}⚠ Invalid version format in VERSION file: $CURRENT_VERSION${NC}"
+    echo -e "${YELLOW}  Using default: 1.0.0${NC}"
+    CURRENT_VERSION="1.0.0"
+fi
+
+# Split version into components
+IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+
+# Increment patch version
+patch=$((patch + 1))
+NEW_VERSION="$major.$minor.$patch"
+
+# Update VERSION file
+echo "$NEW_VERSION" > "$VERSION_FILE"
+
+# Check if there are changes in VERSION file
+if git diff --quiet "$VERSION_FILE"; then
+    # No changes, version wasn't updated
+    echo -e "${CYAN}ℹ Version unchanged: $CURRENT_VERSION${NC}"
+    exit 0
+fi
+
+# Stage VERSION file
+git add "$VERSION_FILE"
+
+# Check if there's already a commit to amend
+if git diff --cached --quiet; then
+    # No staged changes except VERSION, create new commit
+    git commit -m "chore: bump version to $NEW_VERSION" --no-verify
+    echo -e "${GREEN}✓ Version bumped: $CURRENT_VERSION → $NEW_VERSION (new commit)${NC}"
+else
+    # There are other staged changes, amend the last commit
+    git commit --amend --no-edit --no-verify
+    echo -e "${GREEN}✓ Version bumped: $CURRENT_VERSION → $NEW_VERSION (amended)${NC}"
+fi
+
+exit 0

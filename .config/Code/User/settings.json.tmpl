@@ -1,0 +1,189 @@
+{
+    // Editor
+    "editor.fontSize": 14,
+    "editor.fontFamily": "'FiraCode Nerd Font', 'JetBrains Mono', Consolas, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.rulers": [80, 120],
+    "editor.minimap.enabled": true,
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.smoothScrolling": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.suggest.preview": true,
+    "editor.inlineSuggest.enabled": true,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
+    },
+    "editor.wordWrap": "on",
+    "editor.linkedEditing": true,
+    "editor.stickyScroll.enabled": true,
+
+    // Workbench
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.startupEditor": "welcomePage",
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.closeOnFileDelete": true,
+    "workbench.list.smoothScrolling": true,
+    "workbench.tree.indent": 20,
+
+    // Terminal
+    "terminal.integrated.fontFamily": "'FiraCode Nerd Font', 'MesloLGS NF', monospace",
+    "terminal.integrated.fontSize": 13,
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.smoothScrolling": true,
+{{- if eq .chezmoi.os "windows" }}
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+{{- else if eq .chezmoi.os "darwin" }}
+    "terminal.integrated.defaultProfile.osx": "zsh",
+{{- else if eq .chezmoi.os "linux" }}
+    "terminal.integrated.defaultProfile.linux": "bash",
+{{- end }}
+
+    // Files
+    "files.autoSave": "onFocusChange",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true
+    },
+
+    // Search
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.venv": true,
+        "**/.pytest_cache": true
+    },
+
+    // Explorer
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.compactFolders": false,
+
+    // Git
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "git.suggestSmartCommit": false,
+    "git.decorations.enabled": true,
+
+    // Extensions
+    "extensions.autoUpdate": true,
+    "extensions.ignoreRecommendations": false,
+
+    // Language-specific settings
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true
+    },
+    "[markdown]": {
+        "editor.wordWrap": "on",
+        "editor.quickSuggestions": {
+            "comments": "off",
+            "strings": "off",
+            "other": "off"
+        }
+    },
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.formatOnSave": true
+    },
+
+    // JavaScript/TypeScript
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.suggest.autoImports": true,
+    "typescript.suggest.autoImports": true,
+
+    // Python
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "basic",
+
+    // Prettier
+    "prettier.semi": true,
+    "prettier.singleQuote": true,
+    "prettier.trailingComma": "es5",
+    "prettier.printWidth": 100,
+    "prettier.tabWidth": 2,
+
+    // ESLint
+    "eslint.enable": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+
+    // Emmet
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact",
+        "typescript": "typescriptreact"
+    },
+
+    // Security
+    "security.workspace.trust.untrustedFiles": "prompt",
+
+    // Telemetry
+    "telemetry.telemetryLevel": "off",
+
+    // Update
+    "update.mode": "start",
+    "update.showReleaseNotes": false
+}
