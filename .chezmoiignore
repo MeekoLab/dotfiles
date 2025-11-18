@@ -37,9 +37,9 @@ scripts/run_once_install_opensuse.sh
 {{- end }}
 
 {{- if eq .chezmoi.os "windows" }}
-# Ignore Unix scripts on Windows
-scripts/run_once_install_devtools.sh
-scripts/run_once_install_git_hooks.sh
+# Ignore Unix scripts on Windows (all .sh files)
+scripts/*.sh
+scripts/**/*.sh
 
 # Ignore Ghostty config on Windows (not available)
 .config/ghostty/
