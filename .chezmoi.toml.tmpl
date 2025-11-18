@@ -11,7 +11,7 @@
 
 # Source directory configuration (platform-specific)
 {{- if eq .chezmoi.os "windows" }}
-sourceDir = "{{ .chezmoi.homeDir }}\\.local\\share\\chezmoi"
+sourceDir = "{{ .chezmoi.homeDir }}\\.dotfiles"
 {{- else if eq .chezmoi.os "darwin" }}
 sourceDir = "{{ .chezmoi.homeDir }}/.local/share/chezmoi"
 {{- else if eq .chezmoi.os "linux" }}
