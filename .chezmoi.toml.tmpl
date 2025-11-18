@@ -11,11 +11,11 @@
 
 # Source directory configuration (platform-specific)
 {{- if eq .chezmoi.os "windows" }}
-sourceDir = "C:/Users/{{ $username }}/.dotfiles"
+sourceDir = "{{ .chezmoi.homeDir }}\\.local\\share\\chezmoi"
 {{- else if eq .chezmoi.os "darwin" }}
-sourceDir = "/Users/{{ $username }}/.dotfiles"
+sourceDir = "{{ .chezmoi.homeDir }}/.local/share/chezmoi"
 {{- else if eq .chezmoi.os "linux" }}
-sourceDir = "/home/{{ $username }}/.dotfiles"
+sourceDir = "{{ .chezmoi.homeDir }}/.local/share/chezmoi"
 {{- end }}
 
 # File permissions
@@ -52,8 +52,13 @@ umask = 0o022
   args = ["--wait"]
 
 # CD settings (shell integration)
+{{- if eq .chezmoi.os "windows" }}
 [cd]
-  command = "pwsh"
+  command = "powershell"
+{{- else }}
+[cd]
+  command = "bash"
+{{- end }}
 
 # Encryption settings (age)
 [age]
@@ -92,8 +97,8 @@ umask = 0o022
 {{- if eq .chezmoi.os "windows" }}
 
 [interpreters.ps1]
-  command = "pwsh"
-  args = ["-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass"]
+  command = "powershell"
+  args = ["-NoLogo", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
 
 {{- else if eq .chezmoi.os "darwin" }}
 

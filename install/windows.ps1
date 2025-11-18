@@ -13,7 +13,7 @@
 [CmdletBinding()]
 param(
     [string]$DotfilesRepo = "https://github.com/MeekoLab/dotfiles",
-    [switch]$SkipChezmoi
+    [switch]$InitChezmoi
 )
 
 # Strict mode for better error handling
@@ -243,24 +243,33 @@ try {
     Update-EnvironmentPath
     Write-Host ""
 
-    # Initialize chezmoi with dotfiles
-    if (-not $SkipChezmoi) {
+    # Initialize chezmoi with dotfiles (only if explicitly requested)
+    if ($InitChezmoi) {
         Initialize-Chezmoi -Repository $DotfilesRepo
+        Write-Host ""
+        Write-Host "Next steps:" -ForegroundColor Cyan
+        Write-Host "  1. Restart your terminal to load new PATH" -ForegroundColor White
+        Write-Host "  2. Additional packages will be installed via chezmoi scripts" -ForegroundColor White
+        Write-Host "  3. Edit dotfiles: chezmoi edit <file>" -ForegroundColor White
+        Write-Host "  4. Apply changes: chezmoi apply" -ForegroundColor White
     } else {
-        Write-Warning "Skipping chezmoi initialization (SkipChezmoi flag set)"
-        Write-Host "Run manually: chezmoi init --apply $DotfilesRepo" -ForegroundColor Cyan
+        Write-Host "========================================" -ForegroundColor Green
+        Write-Host "  Installation completed successfully!  " -ForegroundColor Green
+        Write-Host "========================================" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Dependencies installed:" -ForegroundColor Cyan
+        Write-Host "  ✓ Git" -ForegroundColor White
+        Write-Host "  ✓ chezmoi" -ForegroundColor White
+        Write-Host "  ✓ curl" -ForegroundColor White
+        Write-Host ""
+        Write-Host "Next steps:" -ForegroundColor Cyan
+        Write-Host "  1. Restart your terminal to load new PATH" -ForegroundColor White
+        Write-Host "  2. Initialize dotfiles: " -ForegroundColor White -NoNewline
+        Write-Host "chezmoi init --apply $DotfilesRepo" -ForegroundColor Yellow
+        Write-Host "     Or use local repo: " -ForegroundColor White -NoNewline
+        Write-Host "chezmoi init --apply /path/to/dotfiler" -ForegroundColor Yellow
     }
 
-    Write-Host ""
-    Write-Host "========================================" -ForegroundColor Green
-    Write-Host "  Installation completed successfully!  " -ForegroundColor Green
-    Write-Host "========================================" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Next steps:" -ForegroundColor Cyan
-    Write-Host "  1. Restart your terminal to load new PATH" -ForegroundColor White
-    Write-Host "  2. Additional packages will be installed via chezmoi scripts" -ForegroundColor White
-    Write-Host "  3. Edit dotfiles: chezmoi edit <file>" -ForegroundColor White
-    Write-Host "  4. Apply changes: chezmoi apply" -ForegroundColor White
     Write-Host ""
 
 }
