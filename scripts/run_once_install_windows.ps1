@@ -122,6 +122,11 @@ $packageCategories = @{
         @{ Id = "wez.wezterm"; Name = "WezTerm" },
         @{ Id = "Neovim.Neovim"; Name = "Neovim" }
     )
+    "Fonts" = @(
+        @{ Id = "DEVCOM.JetBrainsMonoNerdFont"; Name = "JetBrains Mono Nerd Font" },
+        @{ Id = "DEVCOM.FiraCodeNerdFont"; Name = "FiraCode Nerd Font" },
+        @{ Id = "DEVCOM.CascadiaCode"; Name = "Cascadia Code (Nerd Font version)" }
+    )
     "Browsers" = @(
         @{ Id = "Google.Chrome"; Name = "Google Chrome" }
     )
