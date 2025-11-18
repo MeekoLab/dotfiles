@@ -20,9 +20,9 @@ config.color_scheme = 'One Dark (Gogh)'
 
 -- Font configuration
 config.font = wezterm.font_with_fallback({
-  'FiraCode Nerd Font',
-  'JetBrains Mono Nerd Font',
+  'JetBrainsMono Nerd Font',
   'Cascadia Code',
+  'Consolas',
 })
 
 config.font_size = {{ if eq .chezmoi.os "windows" }}11.0{{ else }}13.0{{ end }}
