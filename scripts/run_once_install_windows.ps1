@@ -117,6 +117,7 @@ $results = @{
 # Define packages by category
 $packageCategories = @{
     "Development Tools" = @(
+        @{ Id = "Microsoft.PowerShell"; Name = "PowerShell Core" },
         @{ Id = "Microsoft.VisualStudioCode"; Name = "Visual Studio Code" },
         @{ Id = "Microsoft.WindowsTerminal"; Name = "Windows Terminal" },
         @{ Id = "wez.wezterm"; Name = "WezTerm" },

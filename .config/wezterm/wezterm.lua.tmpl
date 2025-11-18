@@ -61,8 +61,8 @@ config.scrollback_lines = 10000
 -- ============================================================================
 
 {{- if eq .chezmoi.os "windows" }}
--- Windows: Use PowerShell
-config.default_prog = { 'pwsh.exe', '-NoLogo' }
+-- Windows: Use PowerShell (will try pwsh.exe, fallback to powershell.exe)
+config.default_prog = { 'powershell.exe', '-NoLogo' }
 {{- else if eq .chezmoi.os "darwin" }}
 -- macOS: Use zsh
 config.default_prog = { '/bin/zsh', '-l' }
